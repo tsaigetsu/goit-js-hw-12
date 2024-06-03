@@ -88,22 +88,25 @@ async function handleSubmit(event) {
 async function onLoadMore() {
     page += 1;
     showLoader();
-   const data = await searchImg(query, page);
+   
     try {
+        const data = await searchImg(query, page);
+        
+        if ( 15 * data.hits.length >= data.totalHits) {
+           hideBtnLoadMore();
+            noMoreImg();
+        }
+        
         const markup = imgTemplate(data.hits);
         gallery.insertAdjacentHTML("beforeend", markup);
         lightbox.refresh();
         SmoothScroll();
 
-        const TotalPages = Math.ceil(data.totalHits / data.hits.length);
-
-        if (page >= TotalPages) {
-           hideBtnLoadMore();
-            noMoreImg();
-        }
-    }
+        
+}
     catch (error) {
         noMoreImg();
+        hideBtnLoadMore();
     }
     finally {
         hideLoader();
